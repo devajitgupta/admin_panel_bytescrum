@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { registerEmployee } from 'src/app/registerEmployee';
+import { Employee } from 'src/app/employee';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EmployeeService } from 'src/app/employee.service';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms'
@@ -12,18 +12,10 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./all-users.component.css']
 })
 export class AllUsersComponent {
-  roles = [
-    { name: "admin" },
-    { name: "manager" },
-    { name: "employee" }
-  ];
-  emp: registerEmployee[] = [];
+  regForm!: FormGroup
   isEditMode = false;
   editUserId: any;
-  regForm: any
-  employee: registerEmployee[] = [];
-  displayedColumns: string[] = ['id', 'name', 'email', 'salary', 'designation', 'role'];
-  dataSource!: MatTableDataSource<registerEmployee>;
+  employee: Employee[] = [];
   constructor(private router: Router, private api: EmployeeService, private fb: FormBuilder) {
 
 
@@ -31,8 +23,8 @@ export class AllUsersComponent {
   ngOnInit(): void {
     this.getUsers();
     this.mainForm();
-    this.setForm();
-    
+
+
 
   }
 
@@ -57,8 +49,7 @@ export class AllUsersComponent {
     this.regForm = this.fb.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required]],
-      salary: ['', [Validators.required]],
-      designation: ['', [Validators.required]],
+      password: ['', [Validators.required]],
       role: ['', [Validators.required]]
     })
 
@@ -66,46 +57,35 @@ export class AllUsersComponent {
 
 
 
-  onEdit(empId: any) {
-    this.api.selectedEmp = empId;
+  onEdit(empId: Employee) {
+    this.api.selectedEmp = empId
     console.log(empId)
-    this.editUserId=empId.id
-    this.isEditMode=true;
+    this.editUserId = empId;
+    this.isEditMode = true;
     this.regForm.setValue({
-      name:empId.name,
-      email:empId.email,
-      salary:empId.salary,
-      designation:empId.designation,
-      role:empId.role
+      name: empId.name,
+      email: empId.email,
+      role: empId.role
+
 
     });
 
   }
   // set form 
-  setForm() {
-    this.api.selectedEmp = {
-      id: "",
-      name: "",
-      email: "",
-      salary: "",
-      designation: "",
-      role: ""
-    }
-  };
-
-  onSubmit(empId:any){
-    if(this.isEditMode){
+  onSubmit(empId: any) {
+    if (this.isEditMode) {
       console.log(empId)
-      
-      this.api.updateEmp(empId,this.regForm.value).subscribe((res)=>{
+
+      this.api.updateUser(empId, this.regForm.value).subscribe((res) => {
         console.log("User Data Updated")
         this.getUsers();
 
       });
 
-      
-    }else{
-      console.log("Error")
+
+    } else {
+      console.log("1st")
+
     }
 
   }

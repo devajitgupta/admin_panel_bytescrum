@@ -4,7 +4,8 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const varify = require('./verifyToken');
-const verifyToken = require('./verifyToken');
+const user = require('../models/user');
+//const verifyToken = require('./verifyToken');
 
 
 
@@ -12,7 +13,7 @@ router.post('/register', async (req, res) => {
 	const emailExist = await User.findOne({
 		email: req.body.email
 	});
-	
+
 
 	if (emailExist) return res.status(400).send("Email id is already exist");
 
@@ -21,7 +22,7 @@ router.post('/register', async (req, res) => {
 	const hashedPassword = await bcrypt.hash(req.body.password, salt);
 	let role = 'employee';
 	if (req.body.email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()) {
-	  role = 'admin';
+		role = 'admin';
 	}
 
 	// create a new user
@@ -30,7 +31,7 @@ router.post('/register', async (req, res) => {
 		name: req.body.name,
 		email: req.body.email,
 		password: hashedPassword,
-		role:role
+		role: role
 	})
 	try {
 		const savedUser = await user.save();
@@ -44,33 +45,92 @@ router.post('/register', async (req, res) => {
 })
 
 // Middleware to parse request body
-
-router.post('/login', async (req, res) => {
+/*
+router.post('/login',  (req, res) => {
 	// get the email and password of req.body
 	console.log("aa")
-	const user = await User.findOne({ email: req.body.email });
+	const user =  User.findOne({ email: req.body.email });
 
 	// find the user of requested email
-	if (!user) return res.status(402).send("Email Id is wrong");
+	if (!user) return res.json({success:false, message:"User not found"})
 
 	// comapre sent in password with found user password
-	const passwordMatch = await bcrypt.compare(req.body.password, user.password);
-	if (!passwordMatch) return res.status(402).send("password");
+	const passwordMatch =bcrypt.compare(req.body.password, user.password);
+	if (!passwordMatch) return  res.json({success:false, message:"password not found"})
 
 	//-- create and asign a token
-	const Token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+	const Token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET);
 	res.header("auth-token", Token).send({ token: Token });
-	console.log("login routes working");
+	return  res.json({success:true, message:"Login success"})
+});
+*/
+/*
+router.post('/login', async (req, res) => {
+	try {
+	  const user = await User.findOne({ email: req.body.email });
+  
+	  // find the user of requested email
+	  if (!user) return res.json({ success: false, message: "User not found" });
+  
+	  // comapre sent in password with found user password
+	  const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+	  if (!passwordMatch) return res.json({ success: false, message: "password not found" });
+      // check if user is admin
+	  if(user.email==process.env.ADMIN_EMAIL){
+	  //-- create and asign a token
+	  const token = jwt.sign({ userId: user._id,role:'admin' }, process.env.TOKEN_SECRET);
+  
+	  res.set("auth-token", token).json({success:true, token:token,message:"Admin login success"}); // set the "auth-token" header
+	  }else{
+		return res.json({success:false, message:"UnAuthorized"})
+	  }
+	}catch (error) {
+	  console.error(error);
+	  res.status(500).json({ success: false, message: "Server error" });
+	}
+  });
+  
+// get all employee information .
+*/
+router.post('/login', (req, res) => {
+	user.find({ email: req.body.email }).exec().then((result) => {
+		if (result.length < 1) {
+			res.json({ success: false, message: "user not found" });
+		}
+		const user = result[0];
+		bcrypt.compare(req.body.password, user.password, (err, ret) => {
+			if (ret) {
+				const payload = {
+					userId: user._id
+				}
+				const token = jwt.sign({userId:user._id, role:user.role}, process.env.TOKEN_SECRET);
+				res.json({ success: true,token:token, message: "Login Successfully" });
+			} else {
+				res.json({ success: false, message: "password does not match " })
+			}
+		})
+	}).catch(err=>{
+		res.json({success:false, message:"Auth fail"})
+
+	})
 });
 
-// get all employee information 
+// get route 
+router.get('/roles',(req,res)=>{
+	res.json(['admin','manager','employee']);
 
-
-
-// get single user
-router.get("/:id", async (req, res) => {
+})
+// roles based auth
+const checkRole=(role)=>(req,res,next)=>{
+	if(req.body.role !== role){
+		return res.status(403).json({success:false, message:"Access Denied"})
+	}
+	next();
+}
+// get all  user
+router.get("/all-user",async (req, res) => {
 	try {
-		const user = await User.findById(req.params.id);
+		const user = await User.find();
 		res.json(user);
 
 	} catch (error) {
@@ -108,10 +168,17 @@ router.delete('/:id', async (req, res) => {
 });
 
 
-router.post('/logout', (req,rs)=>{
-	res.token('auth-token');
-	res.status(200).json({ message: 'User logged out' });
-
+// profile page single employee
+router.get('/login/profile', varify, (req, res) => {
+	const userId = req.userData.userId;
+	User.findById(userId).exec().then((result) => {
+		res.json({ success: true, data: result });
+	}).catch(err => {
+		res.json({ success: false, message: "server error" })
+	})
 })
+
+// auth 
+
 
 module.exports = router;

@@ -12,7 +12,7 @@ export class HeaderComponent {
       return this.api.LogOut();
     }
     
-    LoggedIn() {
+    loggedIn() {
     return !!localStorage.getItem("token");
   };
   

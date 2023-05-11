@@ -33,7 +33,7 @@ export class RegisterUserComponent {
     console.log("Submit ")
 
     if(this.regForm.valid){
-      this.api.createEmployee(this.regForm.value).subscribe(res=>{
+      this.api.AddUsers(this.regForm.value).subscribe(res=>{
         console.log(res);
         this.regForm.reset();
         this.router.navigate(["/all-users"])

@@ -1,0 +1,26 @@
+<app-header></app-header>
+<section>
+  <div class="container">
+    <div class="login">
+      <div class="login-form">
+        <mat-card>
+          <h1>Employee Profile</h1>
+          <mat-card-content>
+            <div *ngIf="data">
+          <h2>Name - {{data.name}}<br></h2>
+          <h2>Email - {{data.email}}</h2>
+          <h2>Role - {{data.role}}</h2>
+          <hr>
+          <button mat-raised-button type="submit" (click)="logout()">Logout</button>
+
+</div>
+          </mat-card-content>
+
+
+
+        </mat-card>
+
+      </div>
+    </div>
+  </div>
+</section>

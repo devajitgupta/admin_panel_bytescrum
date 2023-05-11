@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Employees = require('../models/employee');
-
-
-
+const varify = require('./verifyToken');
 
 router.post('/employees', async (req, res) => {
 	console.log("data saved")
@@ -24,7 +22,7 @@ router.post('/employees', async (req, res) => {
 
 	}
 })
-router.get('/',async (req,res)=>{
+router.get('/aa',async (req,res)=>{
 	console.log("all users getting")
 	try{
 		const users=await Employees.find();
@@ -55,7 +53,6 @@ router.put('/:id', async (req, res) => {
 //delete
 router.delete('/:id', async (req, res) => {
 	console.log("delted response from backend")
-
 	try {
 		const removeUser = await User.findOneAndRemove(req.params.id);
 		res.send(removeUser);
@@ -64,6 +61,5 @@ router.delete('/:id', async (req, res) => {
 
 	}
 });
-
 
 module.exports = router;

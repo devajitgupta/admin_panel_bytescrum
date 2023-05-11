@@ -3,11 +3,11 @@
 
   <mat-toolbar color="primary">
     <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-      <mat-icon>menu</mat-icon>
+      <mat-icon routerLink="/login">menu</mat-icon>
     </button>
     <span>My App</span>
     <span>
-    <div *ngIf=LoggedIn()>
+    <div *ngIf=loggedIn()>
     <button mat-raised-button routerLink="/all-users">All Employee</button>
   
     <button mat-raised-button routerLink="/register-employee">Add Employee</button>

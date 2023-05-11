@@ -13,15 +13,17 @@ import { HeaderComponent } from './dashboard/header/header.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatCardModule} from '@angular/material/card';
 import { RegisterEmployeeComponent } from './dashboard/register-employee/register-employee.component';
+import { ToastrModule } from 'ngx-toastr';
+import { EmployeeDetailsComponent } from './dashboard/employee-details/employee-details.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent,RegisterUserComponent, AllUsersComponent, HeaderComponent, RegisterEmployeeComponent
+    DashboardComponent,RegisterUserComponent, AllUsersComponent, HeaderComponent, RegisterEmployeeComponent, EmployeeDetailsComponent
     
   ],
   imports: [ReactiveFormsModule,RouterModule,FormsModule,
-    BrowserModule,HttpClientModule,MatCardModule,
+    BrowserModule,HttpClientModule,MatCardModule,ToastrModule,
     AppRoutingModule,MaterialModules, BrowserAnimationsModule
   ],
   providers: [],
