@@ -12,21 +12,41 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./all-users.component.css']
 })
 export class AllUsersComponent {
+  employee:any={
+    name:'',
+    email:'',
+    role:''
+  }
+  myControl = new FormControl();
+  roles: string[] = ['admin', 'manager', 'employee'];
+  selectedRole!: string;
+  empId:any;
+  isEditMode=false;
   regForm!: FormGroup
-  isEditMode = false;
+  showEditForm=false
   editUserId: any;
-  employee: Employee[] = [];
+  AfterSelectValue: any;
   constructor(private router: Router, private api: EmployeeService, private fb: FormBuilder) {
+    
 
 
   }
   ngOnInit(): void {
     this.getUsers();
     this.mainForm();
-
-
-
+    this.setForm();
+   
   }
+  
+  setForm() {
+    this.api.selectedEmp = {
+      id: "",
+      name: "",
+      email: "",
+      password:"",
+      role: ""
+    }
+  };
 
 
   logout() {
@@ -38,10 +58,11 @@ export class AllUsersComponent {
 
 
   getUsers() {
+    
     console.log("get data")
     this.api.getUsers()
       .subscribe(data => {
-        this.employee = data;
+        this.employee = Object.values(data);
         console.log(this.employee)
       });
   }
@@ -49,45 +70,54 @@ export class AllUsersComponent {
     this.regForm = this.fb.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required]],
-      password: ['', [Validators.required]],
       role: ['', [Validators.required]]
-    })
+    });
 
   }
 
 
 
-  onEdit(empId: Employee) {
+  onEdit(empId: any) {
+    
+    this.isEditMode=true
     this.api.selectedEmp = empId
     console.log(empId)
-    this.editUserId = empId;
-    this.isEditMode = true;
+    this.editUserId = empId.id
     this.regForm.setValue({
       name: empId.name,
       email: empId.email,
       role: empId.role
-
-
     });
 
   }
   // set form 
-  onSubmit(empId: any) {
-    if (this.isEditMode) {
-      console.log(empId)
+  onSsubmit(empId:any) {
+    this.api.updateEmp(this.editUserId,this.regForm.value).subscribe((res)=>{
+      console.log("User Data Updated");
+      this.getUsers();
+      this.showEditForm=false
 
-      this.api.updateUser(empId, this.regForm.value).subscribe((res) => {
-        console.log("User Data Updated")
-        this.getUsers();
-
-      });
-
-
-    } else {
-      console.log("1st")
-
-    }
+    });
+ 
 
   }
+  onSubmit() {
+    this.regForm.patchValue({ role: this.selectedRole });
+    this.api.updateEmp(this.editUserId, this.regForm.value).subscribe((res) => {
+      console.log("User Data Updated");
+      this.getUsers();
+      this.showEditForm = false;
+    });
+  }
 
+  
+  
+
+
+  
+  onChange(AfterSelectValue:any){
+    console.log(AfterSelectValue);
+    this.AfterSelectValue=AfterSelectValue
+  }
+  
 }

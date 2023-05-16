@@ -3,7 +3,6 @@ import { Employee } from './employee';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 //import { registerEmployee } from './registerEmployee';
 import { Observable } from 'rxjs';
-
 import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
@@ -12,6 +11,7 @@ export class EmployeeService {
   isAuthenticated() {
     throw new Error('Method not implemented.');
   }
+  selectedRole!:Employee
   selectedEmp!: Employee;
   url = 'http://localhost:3000/';
   update = 'http://localhost:3000';
@@ -39,9 +39,9 @@ export class EmployeeService {
   //}
 
   //get roles values
-  getRoles(){
-    this.http.get<string>(this.url+'roles');
-  } 
+  getRoles(): Observable<string[]> {
+    return this.http.get<string[]>(this.url+'roles');
+  }
   // addd employee
   AddUsers(employee: any) {
     return this.http.post<any>
@@ -63,16 +63,16 @@ export class EmployeeService {
   logout() {
     window.sessionStorage.clear();
   }
-  /*
+  
     // update employee data
-    updateEmp(employee: registerEmployee, id: String) {
+    updateEmp(emp: any, id: String) {
       return this.http.put<any>(
         `${this.update}/${id}`,
-        employee,
+        emp,
         this.httpOptions
       );
     }
-  */
+
   // get all users details 
 
   // show users 
@@ -82,8 +82,10 @@ export class EmployeeService {
 
   // update users 
   updateUser(emp:Employee, id:string){
+    console.log("update user roles ")
+
     return this.http.put<any>(
-      `${this.url+''}/${id}`,
+      `${this.update}/${id}`,
       emp,
       this.httpOptions
     );
@@ -105,6 +107,21 @@ export class EmployeeService {
     }
     
     return this.http.get(`${this.url +'login/profile'}`, {headers:headers});
+  }
+  // demo
+  updateUserRole(id: any, role: string): Observable<any> {
+    const url = `${this.update}/${id}`;
+    const body = { role: role };
+    return this.http.patch(url, body);
+  }
+  // get manager profile 
+  
+  getManagerProfile():Observable<any>{
+    let headers={
+      'Authorization' : "Bearer " + localStorage.getItem('token')
+    }
+    
+    return this.http.get(`${this.url +'login/manager'}`, {headers:headers});
   }
 
 }

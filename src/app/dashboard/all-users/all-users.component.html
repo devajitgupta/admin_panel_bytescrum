@@ -33,6 +33,7 @@
               <th scope="col">Name</th>
               <th scope="col">Email</th>
               <th scope="col">Role</th>
+              <th>Action</th>
             </tr>
           </thead>
 
@@ -42,13 +43,7 @@
             <td>{{emp.name}}</td>
             <td>{{emp.email}}</td>
             <td>{{emp.role}}</td>
-            <td>
-              <span><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="edit"
-                  ></mat-icon>
-              </span>
-            </td>
-
-
+            <td><span><button (click)="showEditForm = !showEditForm" (click)="onEdit(emp)">Edit</button></span></td>
           </tr>
 
         </table>
@@ -56,4 +51,27 @@
 
       </section>
     </div>
+  </div>
+<div *ngIf="isEditMode">
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" [(ngModel)]="employee.name" required>
+    </div>
+  
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" [(ngModel)]="employee.email" required>
+    </div>
+  
+    <div>
+      <label for="role">Role</label>
+      <select id="role" name="role" [(ngModel)]="selectedRole" required>
+        <option value="admin">Admin</option>
+        <option value="manager">Manager</option>
+        <option value="employee">Employee</option>      </select>
+    </div>
+  
+    <button type="submit">Save</button>
+  </form>
   </div>

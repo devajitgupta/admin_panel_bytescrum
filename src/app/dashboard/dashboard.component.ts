@@ -13,11 +13,11 @@ import Swal from 'sweetalert2';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
-  id!:number
+  id!: number
   regForm!: any
   Employee: Employee[] = [];
   isloggedin = false;
-  employee:Employee[]=[]
+  employee: Employee[] = []
   //Login: Login[] = []
 
 
@@ -30,7 +30,7 @@ export class DashboardComponent {
     this.regForm = this.fb.group({
       email: ['', [Validators.required]],
       password: ['', [Validators.required]],
-      role:['',[Validators.required]]
+      role: ['', [Validators.required]]
     })
   }
 
@@ -41,21 +41,41 @@ export class DashboardComponent {
     Swal.fire('Hi', 'We have been informed!', 'success');
   }
 
-  userLogin(){
+  userogin() {
 
     console.log("user login");
-    this.api.createLogin(this.regForm.value).subscribe(res=>{
-      if(res.success){
-        localStorage.setItem('token',res.token);
+    this.api.createLogin(this.regForm.value).subscribe(res => {
+      if (res.success) {
+        localStorage.setItem('token', res.token);
         this.router.navigate(['employee-details'])
 
       }
       //this.router.navigate([`/employee-details/${res.id}`]);
-    },err=>{
+    }, err => {
       alert("Login failed")
     })
   }
-  
+  //-------------------------manager
+  userLogin() {
+    console.log("user login");
+    this.api.createLogin(this.regForm.value).subscribe(res => {
+      if (res.success) {
+        localStorage.setItem('token', res.token);
+        if (res.role === 'admin') {
+          this.router.navigate(['all-users']);
+
+        } else {
+          alert("Access denied. Only managers allowed.");
+        }
+
+
+      }
+    }, err => {
+      alert("Login failed");
+    });
+  }
+
+
 
 
   onDelete() { }

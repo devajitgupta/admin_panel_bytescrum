@@ -32,24 +32,6 @@ router.get('/aa',async (req,res)=>{
 	}
 });
 
-
-
-router.put('/:id', async (req, res) => {
-	console.log("put response new")
-
-	try {
-		const _id = req.params.id;
-		const getUser = await Employees.findOneAndUpdate(_id, req.body, {
-			new: true
-		});
-		res.send(getUser);
-		console.log(getUser);
-	} catch (e) {
-		res.status(400).send(e)
-
-	}
-})
-
 //delete
 router.delete('/:id', async (req, res) => {
 	console.log("delted response from backend")

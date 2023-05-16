@@ -3,9 +3,8 @@ const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const varify = require('./verifyToken');
-const user = require('../models/user');
-//const verifyToken = require('./verifyToken');
+
+const verifyToken = require('./verifyToken');
 
 
 
@@ -42,7 +41,8 @@ router.post('/register', async (req, res) => {
 		res.status(400).send(error);
 
 	}
-})
+});
+
 
 // Middleware to parse request body
 /*
@@ -93,7 +93,7 @@ router.post('/login', async (req, res) => {
 // get all employee information .
 */
 router.post('/login', (req, res) => {
-	user.find({ email: req.body.email }).exec().then((result) => {
+	User.find({ email: req.body.email }).exec().then((result) => {
 		if (result.length < 1) {
 			res.json({ success: false, message: "user not found" });
 		}
@@ -117,9 +117,12 @@ router.post('/login', (req, res) => {
 
 // get route 
 router.get('/roles',(req,res)=>{
+	console.log("get roles ")
+
+
 	res.json(['admin','manager','employee']);
 
-})
+});
 // roles based auth
 const checkRole=(role)=>(req,res,next)=>{
 	if(req.body.role !== role){
@@ -127,6 +130,9 @@ const checkRole=(role)=>(req,res,next)=>{
 	}
 	next();
 }
+
+// save role
+
 // get all  user
 router.get("/all-user",async (req, res) => {
 	try {
@@ -137,7 +143,6 @@ router.get("/all-user",async (req, res) => {
 		res.json({ message: error });
 	}
 });
-/*
 router.put('/:id', async (req, res) => {
 	console.log("put response new")
 
@@ -152,8 +157,8 @@ router.put('/:id', async (req, res) => {
 		res.status(400).send(e)
 
 	}
-})
-*/
+});
+
 //delete
 router.delete('/:id', async (req, res) => {
 	console.log("delted response from backend")
@@ -166,11 +171,29 @@ router.delete('/:id', async (req, res) => {
 
 	}
 });
-
-
-// profile page single employee
-router.get('/login/profile', varify, (req, res) => {
+// route for access only manager
+router.get('/login/manager', verifyToken, (req, res) => {
 	const userId = req.userData.userId;
+	
+	User.findById(userId)
+	  .exec()
+	  .then((result) => {
+		if (result && result.role === 'admin') {
+		  res.json({ success: true, data: result });
+		} else {
+		  res.status(403).json({ success: false, message: 'Access denied. Only managers allowed.' });
+		}
+	  })
+	  .catch((err) => {
+		res.status(500).json({ success: false, message: 'Server error' });
+	  });
+  });
+  
+// profile page single employee
+router.get('/login/profile',verifyToken, (req, res) => {
+	console.log("login profile")
+	const userId=req.userData.userId
+	console.log(userId)
 	User.findById(userId).exec().then((result) => {
 		res.json({ success: true, data: result });
 	}).catch(err => {
