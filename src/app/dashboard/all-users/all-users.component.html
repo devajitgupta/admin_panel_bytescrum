@@ -1,77 +1,43 @@
-<div class="toolbar" role="banner">
-  <img width="40" alt="Angular Logo"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==" />
-  <span>Welcome</span>
-  <div class="spacer">
-
-  </div>
-  <div *ngIf=LoggedIn()>
-    <button mat-raised-button routerLink="/all-users">All Employee</button>
-    <button mat-raised-button routerLink="/login">Login</button>
-    <button mat-raised-button (click)="logout()">Logout</button>
-
-  </div>
-
-
-
-</div>
-
-
-
-<div class="container">
 
   <div class="show-data">
     <h2>Show Data</h2>
-    <div class="getdata">
-      <span><i class="bi bi-trash"></i></span>
-      <section>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col"> ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Email</th>
-              <th scope="col">Role</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tr *ngFor="let emp of employee ; let i = index">
-
-            <th scope="row">{{emp.id}}</th>
-            <td>{{emp.name}}</td>
-            <td>{{emp.email}}</td>
-            <td>{{emp.role}}</td>
-            <td><span><button (click)="showEditForm = !showEditForm" (click)="onEdit(emp)">Edit</button></span></td>
+  <div class="getdata">
+    <span><i class="bi bi-trash"></i></span>
+    <section>
+  
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col"> ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">City</th>
+            <th scope="col">Action</th>
+  
           </tr>
-
-        </table>
-
-
-      </section>
-    </div>
+        </thead>
+  
+        <tr *ngFor="let emp of employee; let i = index">
+          
+          <th scope="row">{{emp.id}}</th>
+          <td>{{emp.name}}</td>
+          <td>{{emp.email}}</td>
+          <td>{{emp.role}}</td>
+          <td>
+            <span class="edit" ><button type="button" class="btn btn-success btn-sm">Edit</button> </span>
+  
+            <span class="delete">
+  
+              <button type="button" class="btn btn-success btn-sm" >Delete</button>
+            </span>
+          </td>
+  
+  
+        </tr>
+  
+      </table>
+  
+  
+    </section>
   </div>
-<div *ngIf="isEditMode">
-  <form (ngSubmit)="onSubmit()">
-    <div>
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" [(ngModel)]="employee.name" required>
-    </div>
-  
-    <div>
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" [(ngModel)]="employee.email" required>
-    </div>
-  
-    <div>
-      <label for="role">Role</label>
-      <select id="role" name="role" [(ngModel)]="selectedRole" required>
-        <option value="admin">Admin</option>
-        <option value="manager">Manager</option>
-        <option value="employee">Employee</option>      </select>
-    </div>
-  
-    <button type="submit">Save</button>
-  </form>
   </div>

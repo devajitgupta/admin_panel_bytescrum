@@ -8,14 +8,13 @@ import { RegisterEmployeeComponent } from './dashboard/register-employee/registe
 import { EmployeeDetailsComponent } from './dashboard/employee-details/employee-details.component';
 const routes: Routes = [
   {path:'', pathMatch:'full', redirectTo:'login'},
-  {path:'dashboard',canActivate:[AuthGuard], component:DashboardComponent},
+  {path:'dashboard',component:DashboardComponent},
   {path:'register-user', component:RegisterUserComponent},
-  {path:'all-users' ,canActivate:[AuthGuard], component:AllUsersComponent},
+  {path:'all-users' , component:AllUsersComponent},
   {path:'login' , component:DashboardComponent},
   {path:'register-employee',component:RegisterEmployeeComponent},
   //{path:'employee-details' , component:EmployeeDetailsComponent},
   {path:'employee-details', component:EmployeeDetailsComponent}
-
 ];
 
 @NgModule({

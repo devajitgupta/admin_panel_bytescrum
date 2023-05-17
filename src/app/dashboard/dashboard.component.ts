@@ -35,13 +35,14 @@ export class DashboardComponent {
   }
 
   ngOnInit() {
+    
     this.mainForm();
   }
   successNotification() {
     Swal.fire('Hi', 'We have been informed!', 'success');
   }
 
-  userogin() {
+  userLsogin() {
 
     console.log("user login");
     this.api.createLogin(this.regForm.value).subscribe(res => {
@@ -57,26 +58,49 @@ export class DashboardComponent {
   }
   //-------------------------manager
   userLogin() {
+    return this.api.createLogin(this.regForm.value).subscribe(
+      (res) => {
+        console.log(res);
+        const token = res.token;
+        const role = res.role;
+        console.log(role);
+        localStorage.setItem('token', token);
+  
+        if (role === 'admin') {
+          this.router.navigate(['all-users']);
+        } else if (role === 'manager') {
+          this.router.navigate(['']);
+        } else if (role === 'employee') {
+          this.router.navigate(['employee-details']);
+        } else {
+          console.log("Unknown role. Access denied."); // Handle the case when the role is not recognized
+        }
+      },
+      (error) => {
+        console.error("Login failed", error);
+      }
+    );
+  }
+  
+  userrLogin() {
     console.log("user login");
     this.api.createLogin(this.regForm.value).subscribe(res => {
-      if (res.success) {
+      console.log(res);
+
+      console.log();
+      if (res.role === 'admin') {
         localStorage.setItem('token', res.token);
-        if (res.role === 'admin') {
-          this.router.navigate(['all-users']);
-
-        } else {
-          alert("Access denied. Only managers allowed.");
-        }
-
-
+        this.router.navigate(['all-users']);
+        return; // Exit the function after navigating
       }
+      
+      // Further code for non-admin and non-employee roles
+      console.log("User is not an admin or employee");
     }, err => {
       alert("Login failed");
     });
   }
-
-
-
+  
 
   onDelete() { }
   onEdit() { }

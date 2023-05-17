@@ -4,7 +4,9 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const verifyToken = require('./verifyToken');
+const { authenticateToken,authorizeRoles } = require('./verifyToken');
+
+//const verifyToken = require('./verifyToken');
 
 
 
@@ -19,18 +21,17 @@ router.post('/register', async (req, res) => {
 	//-- hash password
 	const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(req.body.password, salt);
-	let role = 'employee';
-	if (req.body.email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()) {
-		role = 'admin';
-	}
+	if(req.body.email===process.env.ADMIN_EMAIL){
+		req.body.role='admin';
 
+	}
 	// create a new user
 
 	const user = new User({
 		name: req.body.name,
 		email: req.body.email,
 		password: hashedPassword,
-		role: role
+		role:req.body.role
 	})
 	try {
 		const savedUser = await user.save();
@@ -64,34 +65,7 @@ router.post('/login',  (req, res) => {
 	return  res.json({success:true, message:"Login success"})
 });
 */
-/*
-router.post('/login', async (req, res) => {
-	try {
-	  const user = await User.findOne({ email: req.body.email });
-  
-	  // find the user of requested email
-	  if (!user) return res.json({ success: false, message: "User not found" });
-  
-	  // comapre sent in password with found user password
-	  const passwordMatch = await bcrypt.compare(req.body.password, user.password);
-	  if (!passwordMatch) return res.json({ success: false, message: "password not found" });
-      // check if user is admin
-	  if(user.email==process.env.ADMIN_EMAIL){
-	  //-- create and asign a token
-	  const token = jwt.sign({ userId: user._id,role:'admin' }, process.env.TOKEN_SECRET);
-  
-	  res.set("auth-token", token).json({success:true, token:token,message:"Admin login success"}); // set the "auth-token" header
-	  }else{
-		return res.json({success:false, message:"UnAuthorized"})
-	  }
-	}catch (error) {
-	  console.error(error);
-	  res.status(500).json({ success: false, message: "Server error" });
-	}
-  });
-  
-// get all employee information .
-*/
+
 router.post('/login', (req, res) => {
 	User.find({ email: req.body.email }).exec().then((result) => {
 		if (result.length < 1) {
@@ -103,46 +77,70 @@ router.post('/login', (req, res) => {
 				const payload = {
 					userId: user._id
 				}
-				const token = jwt.sign({userId:user._id, role:user.role}, process.env.TOKEN_SECRET);
-				res.json({ success: true,token:token, message: "Login Successfully" });
+				const token = jwt.sign({ userId: user._id, role: user.role }, process.env.TOKEN_SECRET);
+				res.json({ success: true, token: token,role:user.role, message: "Login Successfully" });
 			} else {
 				res.json({ success: false, message: "password does not match " })
 			}
 		})
-	}).catch(err=>{
-		res.json({success:false, message:"Auth fail"})
+	}).catch(err => {
+		res.json({ success: false, message: "Auth fail" })
 
 	})
 });
 
-// get route 
-router.get('/roles',(req,res)=>{
-	console.log("get roles ")
 
 
-	res.json(['admin','manager','employee']);
 
-});
-// roles based auth
-const checkRole=(role)=>(req,res,next)=>{
-	if(req.body.role !== role){
-		return res.status(403).json({success:false, message:"Access Denied"})
-	}
-	next();
-}
+////////-----------start
 
-// save role
-
-// get all  user
-router.get("/all-user",async (req, res) => {
+router.get('/all-users',authenticateToken,authorizeRoles(['admin']),async (req, res) => {
+	console.log("all users data")
 	try {
-		const user = await User.find();
-		res.json(user);
-
+		const data = await User.find();
+		res.status(200).json({ data });
 	} catch (error) {
-		res.json({ message: error });
+		res.status(500).json({ message: 'An error occurred', error });
 	}
 });
+router.get('/employee', authenticateToken, authorizeRoles (['admin', 'manager']), async (req, res) => {
+	console.log("get employee")
+	try {
+		const data = await User.find({ role: 'employee' });
+		res.status(200).json({ data });
+	} catch (error) {
+		res.status(500).json({ message: 'An error occurred', error });
+	}
+})
+
+router.get('/employee/:id', authenticateToken, authorizeRoles(['admin', 'manager', 'employee']), async (req, res) => {
+	try {
+		const userId = req.user.userId;
+
+		if (req.user.role === 'employee') {
+			const data = await User.findById(userId);
+			res.status(200).json({ data });
+		} else {
+			const data = await User.find({ _id: req.params.id });
+			res.status(200).json({ data });
+		}
+	} catch (error) {
+		res.status(500).json({ message: 'An error occurred', error });
+
+
+
+	}
+})
+
+
+
+
+
+
+
+////////////////-----------end
+
+
 router.put('/:id', async (req, res) => {
 	console.log("put response new")
 
@@ -171,28 +169,10 @@ router.delete('/:id', async (req, res) => {
 
 	}
 });
-// route for access only manager
-router.get('/login/manager', verifyToken, (req, res) => {
-	const userId = req.userData.userId;
-	
-	User.findById(userId)
-	  .exec()
-	  .then((result) => {
-		if (result && result.role === 'admin') {
-		  res.json({ success: true, data: result });
-		} else {
-		  res.status(403).json({ success: false, message: 'Access denied. Only managers allowed.' });
-		}
-	  })
-	  .catch((err) => {
-		res.status(500).json({ success: false, message: 'Server error' });
-	  });
-  });
-  
 // profile page single employee
-router.get('/login/profile',verifyToken, (req, res) => {
+router.get('/login/profile', authenticateToken,authorizeRoles(['employee']), (req, res) => {
 	console.log("login profile")
-	const userId=req.userData.userId
+	const userId = req.user.userId
 	console.log(userId)
 	User.findById(userId).exec().then((result) => {
 		res.json({ success: true, data: result });
@@ -200,8 +180,5 @@ router.get('/login/profile',verifyToken, (req, res) => {
 		res.json({ success: false, message: "server error" })
 	})
 })
-
-// auth 
-
 
 module.exports = router;

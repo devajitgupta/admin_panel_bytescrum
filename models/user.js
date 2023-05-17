@@ -1,5 +1,4 @@
 const mongoose=require('mongoose');
-
 const userSchema= new mongoose.Schema({
     name:{
         type:String},
@@ -13,7 +12,7 @@ const userSchema= new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['admin','manager','employee'],
+        enum:['admin','manager', 'employee'],
         default:'employee'
     }
 });

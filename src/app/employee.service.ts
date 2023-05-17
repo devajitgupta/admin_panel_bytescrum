@@ -25,6 +25,10 @@ export class EmployeeService {
       .set("content-Type", "application/json")
   };
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token'); // Retrieve the JWT token from storage
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
+  }
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -45,12 +49,12 @@ export class EmployeeService {
   // addd employee
   AddUsers(employee: any) {
     return this.http.post<any>
-      (this.url + 'register', employee, this.httpOptions)
+      (this.url + 'register', employee, {headers:this.getAuthHeaders()})
   }
 
   createLogin(emp: any) {
     return this.http.post<any>
-      (this.url + 'login', emp, this.httpOptions);
+      (this.url + 'login', emp, {headers:this.getAuthHeaders()});
   }
 
   loggedIn() {
@@ -69,7 +73,7 @@ export class EmployeeService {
       return this.http.put<any>(
         `${this.update}/${id}`,
         emp,
-        this.httpOptions
+        {headers:this.getAuthHeaders()}
       );
     }
 
@@ -77,7 +81,10 @@ export class EmployeeService {
 
   // show users 
   getUsers(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.url+'all-user');
+    let headers={
+      'Authorization' : "Bearer " + localStorage.getItem('token')
+    }
+    return this.http.get<Employee[]>(this.url+'all-users');
   }
 
   // update users 
@@ -108,6 +115,14 @@ export class EmployeeService {
     
     return this.http.get(`${this.url +'login/profile'}`, {headers:headers});
   }
+  // get admin profile
+  getAdminProfile():Observable<any>{
+    let headers={
+      'Authorization' : "Bearer " + localStorage.getItem('token')
+    }
+    
+    return this.http.get(`${this.url +'login/admin'}`, {headers:headers});
+  }
   // demo
   updateUserRole(id: any, role: string): Observable<any> {
     const url = `${this.update}/${id}`;
@@ -115,13 +130,4 @@ export class EmployeeService {
     return this.http.patch(url, body);
   }
   // get manager profile 
-  
-  getManagerProfile():Observable<any>{
-    let headers={
-      'Authorization' : "Bearer " + localStorage.getItem('token')
-    }
-    
-    return this.http.get(`${this.url +'login/manager'}`, {headers:headers});
-  }
-
 }

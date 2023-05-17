@@ -19,7 +19,7 @@ import { EmployeeDetailsComponent } from './dashboard/employee-details/employee-
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent,RegisterUserComponent, AllUsersComponent, HeaderComponent, RegisterEmployeeComponent, EmployeeDetailsComponent
+    DashboardComponent,RegisterUserComponent, AllUsersComponent, HeaderComponent, RegisterEmployeeComponent, EmployeeDetailsComponent,
     
   ],
   imports: [ReactiveFormsModule,RouterModule,FormsModule,
