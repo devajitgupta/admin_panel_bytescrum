@@ -49,7 +49,7 @@ export class EmployeeService {
   // addd employee
   AddUsers(employee: any) {
     return this.http.post<any>
-      (this.url + 'register', employee, {headers:this.getAuthHeaders()})
+      (this.url + 'register', this.httpOptions)
   }
 
   createLogin(emp: any) {
@@ -79,26 +79,22 @@ export class EmployeeService {
 
   // get all users details 
 
-  // show users 
-  getUsers(): Observable<Employee[]> {
+  // get admin all users route
+  getAllUsers(): Observable<Employee[]> {
     let headers={
       'Authorization' : "Bearer " + localStorage.getItem('token')
     }
-    return this.http.get<Employee[]>(this.url+'all-users');
+    return this.http.get<Employee[]>(this.url+'all-users',{headers:this.getAuthHeaders()});
   }
 
-  // update users 
-  updateUser(emp:Employee, id:string){
-    console.log("update user roles ")
-
+  // update users data role 
+  updateUser(emp: any) {
     return this.http.put<any>(
-      `${this.update}/${id}`,
+      `${this.update}/`,
       emp,
-      this.httpOptions
-    );
-
-  }
-
+      {headers:this.getAuthHeaders()}
+      );
+    }
   // get single user details
 
  getSingleUser(id:string){
@@ -130,4 +126,7 @@ export class EmployeeService {
     return this.http.patch(url, body);
   }
   // get manager profile 
+  deleteUser(id:string):Observable<any>{
+    return this.http.delete(`${this.update}/${id}`,this.httpOptions);
+  }
 }

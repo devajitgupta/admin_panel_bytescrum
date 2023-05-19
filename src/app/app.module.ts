@@ -24,7 +24,9 @@ import { EmployeeDetailsComponent } from './dashboard/employee-details/employee-
   ],
   imports: [ReactiveFormsModule,RouterModule,FormsModule,
     BrowserModule,HttpClientModule,MatCardModule,ToastrModule,
-    AppRoutingModule,MaterialModules, BrowserAnimationsModule
+    AppRoutingModule,MaterialModules, BrowserAnimationsModule,
+    ToastrModule.forRoot(),
+
   ],
   providers: [],
   bootstrap: [AppComponent]

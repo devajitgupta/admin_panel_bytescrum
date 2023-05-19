@@ -5,7 +5,7 @@ import { EmployeeService } from '../employee.service';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +23,7 @@ export class DashboardComponent {
 
 
 
-  constructor(private api: EmployeeService, private router: Router, public fb: FormBuilder) {
+  constructor(private M:ToastrService,private api: EmployeeService, private router: Router, public fb: FormBuilder) {
     this.mainForm();
   }
   mainForm() {
@@ -38,9 +38,7 @@ export class DashboardComponent {
     
     this.mainForm();
   }
-  successNotification() {
-    Swal.fire('Hi', 'We have been informed!', 'success');
-  }
+ 
 
   userLsogin() {
 
@@ -67,16 +65,22 @@ export class DashboardComponent {
         localStorage.setItem('token', token);
   
         if (role === 'admin') {
+          this.M.success("Logged In successfully! Welcome to Admin")
           this.router.navigate(['all-users']);
         } else if (role === 'manager') {
           this.router.navigate(['']);
         } else if (role === 'employee') {
+          this.M.success("Logged In successfully! Welcome to Employee Profile")
           this.router.navigate(['employee-details']);
         } else {
+          this.M.error("Unknown role. Access denied. Please contact an administrator for assistance.");
+
+
           console.log("Unknown role. Access denied."); // Handle the case when the role is not recognized
         }
       },
       (error) => {
+        this.M.error('Login failed. Please check your credentials.', 'Error');
         console.error("Login failed", error);
       }
     );

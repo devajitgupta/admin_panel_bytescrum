@@ -7,15 +7,14 @@
     </button>
     <span>My App</span>
     <span>
-    <div *ngIf=loggedIn()>
-    <button mat-raised-button routerLink="/all-users">All Employee</button>
-  
-    <button mat-raised-button routerLink="/register-employee">Add Employee</button>
-    <button mat-raised-button routerLink="/login">Login</button>
-    <button mat-raised-button (click)="logout()">Logout</button>
-  
-  </div>
+      <div *ngIf="loggedIn()">
+        <button mat-raised-button  routerLink="/all-users">All Employees</button>
+        <button mat-raised-button  routerLink="/register-employee">Add Employee</button>
+        <button mat-raised-button  routerLink="/login">Login</button>
+        <button mat-raised-button  (click)="logout()">Logout</button>
+      </div>
     </span>
+    
     <span class="example-spacer"></span>
     <button mat-icon-button class="example-icon favorite-icon"  aria-label="Example icon-button with heart icon">
       <mat-icon>favorite</mat-icon>

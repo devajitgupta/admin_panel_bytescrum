@@ -1,43 +1,77 @@
+<app-header></app-header>
+<br>
+<hr>
+<div class="container">
 
-  <div class="show-data">
-    <h2>Show Data</h2>
   <div class="getdata">
     <span><i class="bi bi-trash"></i></span>
     <section>
-  
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col"> ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">City</th>
-            <th scope="col">Action</th>
-  
-          </tr>
-        </thead>
-  
-        <tr *ngFor="let emp of employee; let i = index">
-          
-          <th scope="row">{{emp.id}}</th>
-          <td>{{emp.name}}</td>
-          <td>{{emp.email}}</td>
-          <td>{{emp.role}}</td>
-          <td>
-            <span class="edit" ><button type="button" class="btn btn-success btn-sm">Edit</button> </span>
-  
-            <span class="delete">
-  
-              <button type="button" class="btn btn-success btn-sm" >Delete</button>
-            </span>
-          </td>
-  
-  
-        </tr>
-  
-      </table>
-  
-  
+      <mat-card>
+        <mat-card-title>
+          <h1>All Employee Details</h1>
+        </mat-card-title>
+        <mat-card-content>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col" class="table-heading">Name</th>
+                <th scope="col" class="table-heading">Email</th>
+                <th scope="col" class="table-heading">Role</th>
+                <th scope="col" class="table-heading">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let emp of Employee; let i = index">
+
+                <td>{{ emp.name }}</td>
+                <td>{{ emp.email }}</td>
+                <td>{{ emp.role }}</td>
+                <td>
+                  <button mat-icon-button color="primary" aria-label="Edit"
+                  data-toggle="modal" data-target="#exampleModal">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  
+                  <button mat-icon-button color="warn" aria-label="Delete"(click)="onDelete(emp, i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card-content>
+      </mat-card>
     </section>
   </div>
+
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Select Role</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form #userForm="ngForm">
+          <select class="form-select" aria-label="Default select example" name="role" [(ngModel)]="selectedEmployeeRole.role">
+          <option value="">Select Role</option>
+          <option *ngFor="let role of roles">{{role}}</option>
+        </select>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" (click)="onSubmit()">Save changes</button>
+      </div>
+    </div>
   </div>
+</div>

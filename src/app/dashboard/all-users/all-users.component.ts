@@ -11,24 +11,62 @@ import { Observable } from 'rxjs';
   styleUrls: ['./all-users.component.css']
 })
 export class AllUsersComponent {
-  employee: Employee[] = [];
+
+  roles=['admin', 'manager','employee'];
+
+  Employee:Employee[]=[];
+  //selectedEmployeeRole!:Employee
+  selectedEmployeeRole: { id: string, role: string } = { id: '', role: '' };
+  
+
   constructor(
     private router: Router, private api: EmployeeService, private fb: FormBuilder
-  ) { }
+  ) {
+    
+   }
+
+
+
   ngOnInit() {
-    this.getUsers();
+    this.getAllUsers();
   }
 
-  getUsers() {
+  getAllUsers() {
     const token = localStorage.getItem('token');
     if (token) {
-      this.api.getUsers().subscribe(employee => {
-        this.employee = employee;
-      })
+      this.api.getAllUsers().subscribe(
+        (data: any) => {
+          console.log(data);
+          this.Employee=data;
+        },
+        (error) => {
+          // Handle error scenarios
+        }
+      );
+    } else {
+      this.router.navigate(['/login']);
     }
   }
 
+  onSubmit(){
+    console.log(this.selectedEmployeeRole);
+    this.api.updateUser(this.selectedEmployeeRole).subscribe((data)=>{
+      console.log("Role data updated", data);
+      const index = this.Employee.findIndex(emp => emp.id === this.selectedEmployeeRole.id);
+      if (index > -1) {
+        this.Employee[index].role = this.selectedEmployeeRole.role;
+      }
+    })
 
-
+  }
+  onDelete(emp:any, i: any) {
+    console.log(emp)
+    if (window.confirm('do you want to delete data')) {
+      console.log("deleted data " + emp);
+      this.api.deleteUser(emp).subscribe(data => {
+        this.Employee.splice(i, 1);
+      });
+    }
+  }
 
 }

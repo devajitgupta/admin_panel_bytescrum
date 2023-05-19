@@ -10,8 +10,10 @@ const { authenticateToken,authorizeRoles } = require('./verifyToken');
 
 
 
-router.post('/register', async (req, res) => {
-	const emailExist = await User.findOne({
+router.post('/register',async  (req, res) => {
+	console.log(req.body)
+	console.log("register data routes calling")
+	const emailExist =await  User.findOne({
 		email: req.body.email
 	});
 
@@ -20,7 +22,7 @@ router.post('/register', async (req, res) => {
 
 	//-- hash password
 	const salt = await bcrypt.genSalt(10);
-	const hashedPassword = await bcrypt.hash(req.body.password, salt);
+	const hashedPassword =await  bcrypt.hash(req.body.password, salt);
 	if(req.body.email===process.env.ADMIN_EMAIL){
 		req.body.role='admin';
 
@@ -98,11 +100,12 @@ router.get('/all-users',authenticateToken,authorizeRoles(['admin']),async (req, 
 	console.log("all users data")
 	try {
 		const data = await User.find();
-		res.status(200).json({ data });
+		res.status(200).json(data);
 	} catch (error) {
 		res.status(500).json({ message: 'An error occurred', error });
 	}
 });
+
 router.get('/employee', authenticateToken, authorizeRoles (['admin', 'manager']), async (req, res) => {
 	console.log("get employee")
 	try {
@@ -140,23 +143,18 @@ router.get('/employee/:id', authenticateToken, authorizeRoles(['admin', 'manager
 
 ////////////////-----------end
 
-
-router.put('/:id', async (req, res) => {
-	console.log("put response new")
-
+// update user role from select options 
+router.put('/', async (req, res) => {
+	console.log("updated data backend route")
 	try {
-		const _id = req.params.id;
-		const getUser = await User.findOneAndUpdate(_id, req.body, {
-			new: true
-		});
-		res.send(getUser);
-		console.log(getUser);
+	  const _id = req.params.id;
+	  const updatedUser = await User.findOneAndUpdate(_id, { role: req.body.role }, { new: true });
+	  res.send(updatedUser);
 	} catch (e) {
-		res.status(400).send(e)
-
+	  res.status(400).send(e);
 	}
-});
-
+  });
+  
 //delete
 router.delete('/:id', async (req, res) => {
 	console.log("delted response from backend")
