@@ -52,10 +52,8 @@ export class AllUsersComponent {
     console.log(this.selectedEmployeeRole);
     this.api.updateUser(this.selectedEmployeeRole).subscribe((data)=>{
       console.log("Role data updated", data);
-      const index = this.Employee.findIndex(emp => emp.id === this.selectedEmployeeRole.id);
-      if (index > -1) {
-        this.Employee[index].role = this.selectedEmployeeRole.role;
-      }
+      this.getAllUsers();
+      
     })
 
   }

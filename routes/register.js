@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+//const bcrypt = require('bcryptjs');
 
+const jwt = require('jsonwebtoken');
+ 
 const { authenticateToken,authorizeRoles } = require('./verifyToken');
 
 //const verifyToken = require('./verifyToken');
@@ -148,8 +150,9 @@ router.put('/', async (req, res) => {
 	console.log("updated data backend route")
 	try {
 	  const _id = req.params.id;
-	  const updatedUser = await User.findOneAndUpdate(_id, { role: req.body.role }, { new: true });
+	  const updatedUser = await User.findOneAndUpdate(_id, req.body , { new: true });
 	  res.send(updatedUser);
+	  console.log(updatedUser)
 	} catch (e) {
 	  res.status(400).send(e);
 	}

@@ -120,10 +120,10 @@ export class EmployeeService {
     return this.http.get(`${this.url +'login/admin'}`, {headers:headers});
   }
   // demo
-  updateUserRole(id: any, role: string): Observable<any> {
+  updateUserRole(id: any, role: any): Observable<any> {
     const url = `${this.update}/${id}`;
     const body = { role: role };
-    return this.http.patch(url, body);
+    return this.http.put(url, body);
   }
   // get manager profile 
   deleteUser(id:string):Observable<any>{
