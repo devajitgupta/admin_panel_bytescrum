@@ -1,51 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const { authenticateToken,authorizeRoles } = require('./verifyToken');
-
-//const verifyToken = require('./verifyToken');
-
-
-
-router.post('/register',async  (req, res) => {
-	console.log(req.body)
-	console.log("register data routes calling")
-	const emailExist =await  User.findOne({
-		email: req.body.email
-	});
-
-
-	if (emailExist) return res.status(400).send("Email id is already exist");
-
-	//-- hash password
-	const salt = await bcrypt.genSalt(10);
-	const hashedPassword =await  bcrypt.hash(req.body.password, salt);
-	if(req.body.email===process.env.ADMIN_EMAIL){
-		req.body.role='admin';
-
-	}
-	// create a new user
-
-	const user = new User({
-		name: req.body.name,
-		email: req.body.email,
-		password: hashedPassword,
-		role:req.body.role
-	})
-	try {
-		const savedUser = await user.save();
-		console.log(savedUser)
-		res.send(savedUser);
-
-	} catch (error) {
-		res.status(400).send(error);
-
-	}
-});
-
 
 // Middleware to parse request body
 /*
@@ -72,7 +31,7 @@ router.post('/login', (req, res) => {
 	User.find({ email: req.body.email }).exec().then((result) => {
 		if (result.length < 1) {
 			res.json({ success: false, message: "user not found" });
-		}
+		};
 		const user = result[0];
 		bcrypt.compare(req.body.password, user.password, (err, ret) => {
 			if (ret) {
@@ -89,6 +48,51 @@ router.post('/login', (req, res) => {
 		res.json({ success: false, message: "Auth fail" })
 
 	})
+});
+
+
+//const verifyToken = require('./verifyToken');
+router.post('/register',async  (req, res) => {
+	console.log(req.body)
+	console.log("register data routes calling")
+	const emailExist =await  User.findOne({
+		email: req.body.email
+	});
+
+
+	if (emailExist) return res.status(400).send("Email id is already exist");
+
+	//-- hash password
+	const salt = await bcrypt.genSalt(10);
+	console.log("Passowrd:" +req.body.password);
+
+	console.log("salt :" + salt);
+
+
+
+	const hashedPassword =await  bcrypt.hash(req.body.password, salt);
+	console.log("Passowrd:" +req.body.password);
+
+	if(req.body.email===process.env.ADMIN_EMAIL){
+		req.body.role='admin';
+
+	}
+	// create a new user
+	const user = new User({
+		name: req.body.name,
+		email: req.body.email,
+		password: hashedPassword,
+		role:req.body.role
+	})
+	try {
+		const savedUser = await user.save();
+		console.log(savedUser)
+		res.send(savedUser);
+
+	} catch (error) {
+		res.status(400).send(error);
+
+	}
 });
 
 
@@ -133,7 +137,20 @@ router.get('/employee/:id', authenticateToken, authorizeRoles(['admin', 'manager
 
 
 	}
-})
+});
+
+
+// create a route for manager only 
+router.get('/manager',authenticateToken,authorizeRoles(['manager']),async (req, res) => {
+	console.log("manager routes geting")
+	try {
+		const data = await User.find({ role: { $in: ['manager', 'employee'] } });
+		res.status(200).json(data);
+	} catch (error) {
+		res.status(500).json({ message: 'An error occurred', error });
+	}
+});
+
 
 
 
@@ -144,17 +161,16 @@ router.get('/employee/:id', authenticateToken, authorizeRoles(['admin', 'manager
 ////////////////-----------end
 
 // update user role from select options 
-router.put('/', async (req, res) => {
+router.patch('/register/:id', async (req, res) => {
 	console.log("updated data backend route")
 	try {
 	  const _id = req.params.id;
-	  const updatedUser = await User.findOneAndUpdate(_id, { role: req.body.role }, { new: true });
+	  const updatedUser = await User.findByIdAndUpdate(_id,req.body, { new: true });
 	  res.send(updatedUser);
 	} catch (e) {
 	  res.status(400).send(e);
 	}
   });
-  
 //delete
 router.delete('/:id', async (req, res) => {
 	console.log("delted response from backend")

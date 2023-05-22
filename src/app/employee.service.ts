@@ -11,12 +11,15 @@ export class EmployeeService {
   isAuthenticated() {
     throw new Error('Method not implemented.');
   }
-  selectedRole!:Employee
+  selectedEmployee!:Employee
+  
+  //selectedRole!:Employee
   selectedEmp!: Employee;
-  url = 'http://localhost:3000/';
-  update = 'http://localhost:3000';
+  url = 'http://localhost:8080/';
+  update = 'http://localhost:8080';
 
-  loginUrl = 'http://localhost:3000/login'
+
+  loginUrl = 'http://localhost:8080/login'
   TOKEN_KEY = 'auth-token';
   USER_KEY = 'auth-user';
 
@@ -49,7 +52,7 @@ export class EmployeeService {
   // addd employee
   AddUsers(employee: any) {
     return this.http.post<any>
-      (this.url + 'register', this.httpOptions)
+      (this.url + 'register', this.getAuthHeaders)
   }
 
   createLogin(emp: any) {
@@ -71,7 +74,7 @@ export class EmployeeService {
     // update employee data
     updateEmp(emp: any, id: String) {
       return this.http.put<any>(
-        `${this.update}/${id}`,
+        this.update + '/register/:id',
         emp,
         {headers:this.getAuthHeaders()}
       );
@@ -87,16 +90,21 @@ export class EmployeeService {
     return this.http.get<Employee[]>(this.url+'all-users',{headers:this.getAuthHeaders()});
   }
 
-  // update users data role 
-  updateUser(emp: any) {
-    return this.http.put<any>(
-      `${this.update}/`,
-      emp,
-      {headers:this.getAuthHeaders()}
-      );
+  // get manager routes 
+  getManagerRoutesData(): Observable<Employee[]> {
+    let headers={
+      'Authorization' : "Bearer " + localStorage.getItem('token')
     }
-  // get single user details
+    return this.http.get<Employee[]>(this.url+'manager',{headers:this.getAuthHeaders()});
+  }
 
+  // update users data role 
+  updateUser(emp: any,id: String) {
+    return this.http.patch<any>(`${this.update}/${id}`,
+      emp,
+      this.httpOptions
+      );
+  }
  getSingleUser(id:string){
   	return this.http.get<Employee>(`${this.url+'user'}/${id}`);
   }
@@ -119,12 +127,7 @@ export class EmployeeService {
     
     return this.http.get(`${this.url +'login/admin'}`, {headers:headers});
   }
-  // demo
-  updateUserRole(id: any, role: string): Observable<any> {
-    const url = `${this.update}/${id}`;
-    const body = { role: role };
-    return this.http.patch(url, body);
-  }
+
   // get manager profile 
   deleteUser(id:string):Observable<any>{
     return this.http.delete(`${this.update}/${id}`,this.httpOptions);

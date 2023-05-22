@@ -15,11 +15,12 @@ import {MatCardModule} from '@angular/material/card';
 import { RegisterEmployeeComponent } from './dashboard/register-employee/register-employee.component';
 import { ToastrModule } from 'ngx-toastr';
 import { EmployeeDetailsComponent } from './dashboard/employee-details/employee-details.component';
+import { AllManagerRoutesComponent } from './dashboard/all-manager-routes/all-manager-routes.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent,RegisterUserComponent, AllUsersComponent, HeaderComponent, RegisterEmployeeComponent, EmployeeDetailsComponent,
+    DashboardComponent,RegisterUserComponent, AllUsersComponent, HeaderComponent, RegisterEmployeeComponent, EmployeeDetailsComponent,AllManagerRoutesComponent
     
   ],
   imports: [ReactiveFormsModule,RouterModule,FormsModule,

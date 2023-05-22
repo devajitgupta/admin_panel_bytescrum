@@ -11,24 +11,38 @@ import { Observable } from 'rxjs';
   styleUrls: ['./all-users.component.css']
 })
 export class AllUsersComponent {
+  regForm!: FormGroup;
 
-  roles=['admin', 'manager','employee'];
 
-  Employee:Employee[]=[];
-  //selectedEmployeeRole!:Employee
-  selectedEmployeeRole: { id: string, role: string } = { id: '', role: '' };
-  
+  roles = ['admin', 'manager', 'employee'];
+  selectedRole!: string;
+
+  manager: Employee[] = [];
+
+  Employee: Employee[] = [];
+  selectedEmployeeRole!: Employee
+  //selectedEmployeeRole: { id: string, role: string } = { id: '', role: '' };
+
 
   constructor(
     private router: Router, private api: EmployeeService, private fb: FormBuilder
   ) {
-    
-   }
+
+  }
 
 
 
   ngOnInit() {
     this.getAllUsers();
+    this.mainForm();
+  }
+  mainForm() {
+    this.regForm = this.fb.group({
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required]],
+      selectedEmployeeRole: ['', [Validators.required]]
+
+    })
   }
 
   getAllUsers() {
@@ -37,7 +51,7 @@ export class AllUsersComponent {
       this.api.getAllUsers().subscribe(
         (data: any) => {
           console.log(data);
-          this.Employee=data;
+          this.Employee = data;
         },
         (error) => {
           // Handle error scenarios
@@ -48,18 +62,21 @@ export class AllUsersComponent {
     }
   }
 
-  onSubmit(){
-    console.log(this.selectedEmployeeRole);
-    this.api.updateUser(this.selectedEmployeeRole).subscribe((data)=>{
-      console.log("Role data updated", data);
-      const index = this.Employee.findIndex(emp => emp.id === this.selectedEmployeeRole.id);
-      if (index > -1) {
-        this.Employee[index].role = this.selectedEmployeeRole.role;
-      }
-    })
+
+  onSubmit(empID: any) {
+    console.log("dsdhksj")
+
+    console.log(this.regForm.value)
+    this.api.updateUser(empID,this.regForm.value).subscribe((res)=>{
+      console.log(res)
+      this.getAllUsers();
+
+    });
+
 
   }
-  onDelete(emp:any, i: any) {
+
+  onDelete(emp: any, i: any) {
     console.log(emp)
     if (window.confirm('do you want to delete data')) {
       console.log("deleted data " + emp);
@@ -68,5 +85,18 @@ export class AllUsersComponent {
       });
     }
   }
+
+
+  onEdit(empID: Employee) {
+    this.api.selectedEmployee = empID;
+    console.log(empID);
+    this.regForm.setValue({
+      name:empID.name,
+      email:empID.email,
+      selectedEmployeeRole:empID.role
+    })
+
+  }
+  
 
 }

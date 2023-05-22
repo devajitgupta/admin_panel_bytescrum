@@ -68,9 +68,11 @@ export class DashboardComponent {
           this.M.success("Logged In successfully! Welcome to Admin")
           this.router.navigate(['all-users']);
         } else if (role === 'manager') {
-          this.router.navigate(['']);
+          this.M.success("Logged In successfully! Welcome to Manager Dashboard")
+
+          this.router.navigate(['manager']);
         } else if (role === 'employee') {
-          this.M.success("Logged In successfully! Welcome to Employee Profile")
+          this.M.success("Logged In successfully! Welcome to Employee Profile");
           this.router.navigate(['employee-details']);
         } else {
           this.M.error("Unknown role. Access denied. Please contact an administrator for assistance.");

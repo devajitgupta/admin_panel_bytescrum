@@ -25,20 +25,19 @@ export class RegisterUserComponent {
     this.regForm=this.fb.group({
       name:['',[Validators.required]],
       email:['',[Validators.required]],
-      password:['',[Validators.required]]
+      password:['',[Validators.required]],
+      role:['',[Validators.required]]
+
     })
   }
 
   onSubmit(){
-    console.log("Submit ")
-
-    if(this.regForm.valid){
+    console.log(this.regForm.value);
       this.api.AddUsers(this.regForm.value).subscribe(res=>{
         console.log(res);
-        this.regForm.reset();
-        this.router.navigate(["/all-users"])
-      })
-    }
+        this.router.navigate(['/login'])
+      });
+    
     
   }
   
