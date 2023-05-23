@@ -60,8 +60,8 @@
       </div>
 
       <div class="modal-body">
-        <form [formGroup]="regForm" (ngSubmit)="onSubmit(regForm.value)">
-          <select class="form-select" aria-label="Default select example" name="role" formControlName="selectedEmployeeRole">
+        <form [formGroup]="regForm" (ngSubmit)="onSubmit()">
+          <select class="form-select" aria-label="Default select example" name="role" formControlName="role">
             <option value="">Select Role</option>
             <option *ngFor="let role of roles" [value]="role">{{role}}</option>
           </select>

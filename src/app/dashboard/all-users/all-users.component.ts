@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { EmployeeService } from 'src/app/employee.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { Employee } from 'src/app/employee';
 import { Observable } from 'rxjs';
@@ -12,20 +12,17 @@ import { Observable } from 'rxjs';
 })
 export class AllUsersComponent {
   regForm!: FormGroup;
-
-
+  userId:any;
   roles = ['admin', 'manager', 'employee'];
-  selectedRole!: string;
-
-  manager: Employee[] = [];
-
+  // selected empId 
   Employee: Employee[] = [];
-  selectedEmployeeRole!: Employee
   //selectedEmployeeRole: { id: string, role: string } = { id: '', role: '' };
 
 
   constructor(
-    private router: Router, private api: EmployeeService, private fb: FormBuilder
+    private router: Router, private api: EmployeeService, private fb: FormBuilder,
+    private route: ActivatedRoute,
+
   ) {
 
   }
@@ -33,18 +30,18 @@ export class AllUsersComponent {
 
 
   ngOnInit() {
+    
+
     this.getAllUsers();
     this.mainForm();
   }
   mainForm() {
     this.regForm = this.fb.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      selectedEmployeeRole: ['', [Validators.required]]
+
+      role: ['', [Validators.required]]
 
     })
-  }
-
+  };
   getAllUsers() {
     const token = localStorage.getItem('token');
     if (token) {
@@ -63,17 +60,13 @@ export class AllUsersComponent {
   }
 
 
-  onSubmit(empID: any) {
-    console.log("dsdhksj")
 
+  onSubmit(){ 
     console.log(this.regForm.value)
-    this.api.updateUser(empID,this.regForm.value).subscribe((res)=>{
-      console.log(res)
-      this.getAllUsers();
 
-    });
-
-
+    this.api.updateEmployee(this.regForm.value).subscribe(res=>{
+      console.log(res);
+    })
   }
 
   onDelete(emp: any, i: any) {
@@ -87,16 +80,15 @@ export class AllUsersComponent {
   }
 
 
-  onEdit(empID: Employee) {
-    this.api.selectedEmployee = empID;
-    console.log(empID);
-    this.regForm.setValue({
-      name:empID.name,
-      email:empID.email,
-      selectedEmployeeRole:empID.role
-    })
-
+  onEdit(emp:Employee) {
+    console.log(emp)
+   // this.api.selectedEmpId = userId
+    this.regForm.patchValue({
+      emp
+    });
   }
+
+  //can't see yr full screen open chrome
   
 
 }

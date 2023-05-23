@@ -11,12 +11,17 @@ export class EmployeeService {
   isAuthenticated() {
     throw new Error('Method not implemented.');
   }
-  selectedEmployee!:Employee
-  
+  //selectedEmployee!:Employee
+  // asign currecnt id 
+  empId!:string
   //selectedRole!:Employee
+  selectedEmpId!:Employee;
+
   selectedEmp!: Employee;
   url = 'http://localhost:8080/';
   update = 'http://localhost:8080';
+  //updateURL:string = 'http://localhost:8080/register';
+
 
 
   loginUrl = 'http://localhost:8080/login'
@@ -99,8 +104,13 @@ export class EmployeeService {
   }
 
   // update users data role 
-  updateUser(emp: any,id: String) {
-    return this.http.patch<any>(`${this.update}/${id}`,
+  UupdateUser(role:any):Observable<any> {
+    const url = `${this.update}`;
+    return this.http.patch(url, { role });
+  }
+  updateUser(emp: any,id: any):Observable<any> {
+    return this.http.put<any>(
+      `${this.update}/${id}`,
       emp,
       this.httpOptions
       );
@@ -132,4 +142,11 @@ export class EmployeeService {
   deleteUser(id:string):Observable<any>{
     return this.http.delete(`${this.update}/${id}`,this.httpOptions);
   }
+
+  updateEmployee(emp:Employee){
+    return this.http.put(`${this.update}/${emp._id}`, emp);
+  }
 }
+
+
+

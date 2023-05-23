@@ -161,17 +161,22 @@ router.get('/manager',authenticateToken,authorizeRoles(['manager']),async (req, 
 ////////////////-----------end
 
 // update user role from select options 
-router.patch('/register/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
 	console.log("updated data backend route")
 	try {
+
 	  const _id = req.params.id;
-	  const updatedUser = await User.findByIdAndUpdate(_id,req.body, { new: true });
+	  const { role } = req.body; // Extract only the "role" field from req.body
+
+	  const updatedUser = await User.findByIdAndUpdate(_id,{$set: {role}}, { new: true });
 	  res.send(updatedUser);
 	} catch (e) {
 	  res.status(400).send(e);
 	}
   });
+
 //delete
+
 router.delete('/:id', async (req, res) => {
 	console.log("delted response from backend")
 
