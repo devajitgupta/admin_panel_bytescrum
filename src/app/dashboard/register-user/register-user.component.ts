@@ -36,17 +36,9 @@ export class RegisterUserComponent {
       this.api.AddUsers(this.regForm.value).subscribe(res=>{
         this.Toster.success("Registered Successfully")
         console.log(res);
-<<<<<<< HEAD
         this.router.navigate(['/login'])
       });
-    
-    
-=======
-        this.regForm.reset();
-        this.router.navigate(["/all-users"])
-      })
-    }
->>>>>>> 4b2b0ac483a86756ad66bb68c17c24df855eb74e
   }
+
 
 }
