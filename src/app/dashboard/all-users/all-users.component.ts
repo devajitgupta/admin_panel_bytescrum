@@ -61,17 +61,6 @@ export class AllUsersComponent {
     }
   }
 
-<<<<<<< HEAD
-=======
-  onSubmit(){
-    console.log(this.selectedEmployeeRole);
-    this.api.updateUser(this.selectedEmployeeRole).subscribe((data)=>{
-      console.log("Role data updated", data);
-      this.getAllUsers();
-      
-    })
->>>>>>> 4b2b0ac483a86756ad66bb68c17c24df855eb74e
-
 
   onSubmit(){ 
     console.log(this.regForm.value.id);
