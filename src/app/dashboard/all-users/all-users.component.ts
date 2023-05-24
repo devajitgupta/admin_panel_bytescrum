@@ -16,6 +16,8 @@ export class AllUsersComponent {
   roles = ['admin', 'manager', 'employee'];
   // selected empId 
   Employee: Employee[] = [];
+  selectedEmployeeId!: string;
+
   //selectedEmployeeRole: { id: string, role: string } = { id: '', role: '' };
 
 
@@ -62,9 +64,19 @@ export class AllUsersComponent {
 
 
   onSubmit(){ 
-    console.log(this.regForm.value)
+    console.log(this.regForm.value.id);
+    const { role } = this.regForm.value;
+    const updatedEmployee = {
+      _id: this.selectedEmployeeId,
+      name:'',
+      email:'',
+      password:'',
+      role: role
+    };
 
-    this.api.updateEmployee(this.regForm.value).subscribe(res=>{
+    this.api.updateEmployee(updatedEmployee).subscribe(res=>{
+      console.log("response");
+
       console.log(res);
     })
   }
@@ -81,7 +93,8 @@ export class AllUsersComponent {
 
 
   onEdit(emp:Employee) {
-    console.log(emp)
+    this.selectedEmployeeId=emp._id;
+    console.log(emp._id)
    // this.api.selectedEmpId = userId
     this.regForm.patchValue({
       emp

@@ -40,24 +40,10 @@ export class EmployeeService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-
-  //--- register employee
-  createEmployee(emp: any) {
-    return this.http.post<any>
-      (this.url + 'employees', emp, this.httpOptions);
-  }
-  //getUsers(): Observable<registerEmployee[]> {
-  // return this.http.get<registerEmployee[]>(this.url);
-  //}
-
-  //get roles values
-  getRoles(): Observable<string[]> {
-    return this.http.get<string[]>(this.url+'roles');
-  }
   // addd employee
   AddUsers(employee: any) {
     return this.http.post<any>
-      (this.url + 'register', this.getAuthHeaders)
+      (this.url + 'register',employee, this.httpOptions)
   }
 
   createLogin(emp: any) {
@@ -75,19 +61,6 @@ export class EmployeeService {
   logout() {
     window.sessionStorage.clear();
   }
-  
-    // update employee data
-    updateEmp(emp: any, id: String) {
-      return this.http.put<any>(
-        this.update + '/register/:id',
-        emp,
-        {headers:this.getAuthHeaders()}
-      );
-    }
-
-  // get all users details 
-
-  // get admin all users route
   getAllUsers(): Observable<Employee[]> {
     let headers={
       'Authorization' : "Bearer " + localStorage.getItem('token')
@@ -101,19 +74,6 @@ export class EmployeeService {
       'Authorization' : "Bearer " + localStorage.getItem('token')
     }
     return this.http.get<Employee[]>(this.url+'manager',{headers:this.getAuthHeaders()});
-  }
-
-  // update users data role 
-  UupdateUser(role:any):Observable<any> {
-    const url = `${this.update}`;
-    return this.http.patch(url, { role });
-  }
-  updateUser(emp: any,id: any):Observable<any> {
-    return this.http.put<any>(
-      `${this.update}/${id}`,
-      emp,
-      this.httpOptions
-      );
   }
  getSingleUser(id:string){
   	return this.http.get<Employee>(`${this.url+'user'}/${id}`);

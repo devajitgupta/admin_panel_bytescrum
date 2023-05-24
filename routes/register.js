@@ -26,6 +26,42 @@ router.post('/login',  (req, res) => {
 	return  res.json({success:true, message:"Login success"})
 });
 */
+//const verifyToken = require('./verifyToken');
+router.post('/register',async  (req, res) => {
+	console.log(req.body)
+	console.log("register data routes calling")
+	const emailExist =await  User.findOne({
+		email: req.body.email
+	});
+	if (emailExist) return res.status(400).send("Email id is already exist");
+	//-- hash password
+	const salt = await bcrypt.genSalt(10);
+	console.log("Passowrd:" +req.body.password);
+	console.log("salt :" + salt);
+	const hashedPassword =await  bcrypt.hash(req.body.password, salt);
+	console.log("Passowrd:" +req.body.password);
+
+	if(req.body.email===process.env.ADMIN_EMAIL){
+		req.body.role='admin';
+	}
+	// create a new user
+	const user = new User({
+		name: req.body.name,
+		email: req.body.email,
+		password: hashedPassword,
+		role:req.body.role
+	})
+	try {
+		const savedUser = await user.save();
+		console.log(savedUser)
+		res.send(savedUser);
+
+	} catch (error) {
+		res.status(400).send(error);
+
+	}
+});
+
 
 router.post('/login', (req, res) => {
 	User.find({ email: req.body.email }).exec().then((result) => {
@@ -49,53 +85,6 @@ router.post('/login', (req, res) => {
 
 	})
 });
-
-
-//const verifyToken = require('./verifyToken');
-router.post('/register',async  (req, res) => {
-	console.log(req.body)
-	console.log("register data routes calling")
-	const emailExist =await  User.findOne({
-		email: req.body.email
-	});
-
-
-	if (emailExist) return res.status(400).send("Email id is already exist");
-
-	//-- hash password
-	const salt = await bcrypt.genSalt(10);
-	console.log("Passowrd:" +req.body.password);
-
-	console.log("salt :" + salt);
-
-
-
-	const hashedPassword =await  bcrypt.hash(req.body.password, salt);
-	console.log("Passowrd:" +req.body.password);
-
-	if(req.body.email===process.env.ADMIN_EMAIL){
-		req.body.role='admin';
-
-	}
-	// create a new user
-	const user = new User({
-		name: req.body.name,
-		email: req.body.email,
-		password: hashedPassword,
-		role:req.body.role
-	})
-	try {
-		const savedUser = await user.save();
-		console.log(savedUser)
-		res.send(savedUser);
-
-	} catch (error) {
-		res.status(400).send(error);
-
-	}
-});
-
-
 
 
 ////////-----------start

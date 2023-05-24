@@ -8,7 +8,7 @@
     <section>
       <mat-card>
         <mat-card-title>
-          <h1>Manager Dashboard</h1>
+          <h1>Admin Dashboard</h1>
         </mat-card-title>
         <mat-card-content>
           <table class="table">
@@ -21,19 +21,18 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let mg of manager; let i = index">
+              <tr *ngFor="let emp of Employee; let i = index">
 
-                <td>{{ mg.name }}</td>
-                <td>{{ mg.email }}</td>
-                <td>{{ mg.role }}</td>
-
+                <td>{{ emp.name }}</td>
+                <td>{{ emp.email }}</td>
+                <td>{{ emp.role }}</td>
                 <td>
                   <button mat-icon-button color="primary" aria-label="Edit"
-                  data-toggle="modal" data-target="#exampleModal">
+                  data-toggle="modal" data-target="#exampleModal"(click)="onEdit(emp)">
                     <mat-icon>edit</mat-icon>
                   </button>
                   
-                  <button mat-icon-button color="warn" aria-label="Delete"(click)="onDelete(mg, i)">
+                  <button mat-icon-button color="warn" aria-label="Delete"(click)="onDelete(emp, i)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>
@@ -61,17 +60,18 @@
       </div>
 
       <div class="modal-body">
-        <form #userForm="ngForm">
-          <select class="form-select" aria-label="Default select example" name="role" [(ngModel)]="selectedEmployeeRole.role">
-          <option value="">Select Role</option>
-          <option *ngFor="let role of roles">{{role}}</option>
-        </select>
+        <form [formGroup]="regForm" (ngSubmit)="onSubmit()">
+          <select class="form-select" aria-label="Default select example" name="role" formControlName="role">
+            <option value="">Select Role</option>
+            <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+
         </form>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" (click)="onSubmit()">Save changes</button>
       </div>
     </div>
   </div>
