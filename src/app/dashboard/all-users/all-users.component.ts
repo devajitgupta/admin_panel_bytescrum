@@ -91,7 +91,6 @@ export class AllUsersComponent {
     }
   }
 
-
   onEdit(emp:Employee) {
     this.selectedEmployeeId=emp._id;
     console.log(emp._id)
