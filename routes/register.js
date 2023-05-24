@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+<<<<<<< HEAD
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+=======
+const bcrypt = require('bcrypt');
+//const bcrypt = require('bcryptjs');
+>>>>>>> 4b2b0ac483a86756ad66bb68c17c24df855eb74e
 
+const jwt = require('jsonwebtoken');
+ 
 const { authenticateToken,authorizeRoles } = require('./verifyToken');
 
 // Middleware to parse request body
@@ -155,10 +162,15 @@ router.put('/:id', async (req, res) => {
 	try {
 
 	  const _id = req.params.id;
+<<<<<<< HEAD
 	  const { role } = req.body; // Extract only the "role" field from req.body
 
 	  const updatedUser = await User.findByIdAndUpdate(_id,{$set: {role}}, { new: true });
+=======
+	  const updatedUser = await User.findOneAndUpdate(_id, req.body , { new: true });
+>>>>>>> 4b2b0ac483a86756ad66bb68c17c24df855eb74e
 	  res.send(updatedUser);
+	  console.log(updatedUser)
 	} catch (e) {
 	  res.status(400).send(e);
 	}
